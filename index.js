@@ -10,8 +10,15 @@ log.values.secondary = 'chalk.red(data.secondary)'
 log.values.mode = 'chalk.red(data.mode)'
 log.values.clear = 'data.data'
 log.after = function (data) {
-	if ((config.log || 'both') == 'full' || (config.log || 'both') == 'both')
+	
+	if ((config.log || 'both') == 'full' || (config.log || 'both') == 'both'){
 		fs.appendFileSync('./logs/full.log', data + '\n');
+		if (fs.statSync("./logs/full.log").size > (config.rotation || 1e6)) {
+			fs.rename("./logs/full.log", `./logs/full+.log`, function (err) {
+				if(err) log.log({ action: 'warn', data: `Error rotating log file` })
+			});
+		}
+	}
 }
 
 function newIp() {
@@ -28,7 +35,7 @@ function newIp() {
 				resolve({ status: res.statusCode, response: d.toString() })
 			})
 		}).on('error', e => {
-			log.log({ action: 'warn', data: `Failed to get ip`})
+			log.log({ action: 'warn', data: `Failed to get address`})
 			reject(e)
 		}).end()
 	})
@@ -116,6 +123,12 @@ function updateLog(ip, domains, ok) {
 	}
 	if ((config.log || 'both') == 'short' || (config.log || 'both') == 'both')
 		fs.appendFileSync('./logs/short.log', `${new Date} ${ip}\n${list}`);
+
+	if (fs.statSync("./logs/short.log").size > (config.rotation || 1e6)) {
+		fs.rename("./logs/short.log", `./logs/short+.log`, function (err) {
+			if (err) log.log({ action: 'warn', data: `Error rotating log file` })
+		});
+	}
 }
 
 if (!fs.existsSync('./logs')) fs.mkdirSync('./logs')
@@ -133,8 +146,18 @@ log.log({ action: 'info', data: `Loaded config.json` })
 
 let domains = {}
 
+if ((config.mode != 'single') && (config.mode != 'interval')) {
+	log.log({ action: 'warn', data: `Invalid mode` })
+	process.exit(1)
+}
+if ((config.source != 'arguments') && (config.source != 'file')) {
+	log.log({ action: 'warn', data: `Invalid source` })
+	process.exit(1)
+}
+
+log.log({ action: 'info', data: `${config.mode} | ${config.source}`})
+
 if (config.source == 'arguments') {
-	log.log({ action: 'secondary', data: `Source`, secondary: 'arguments' })
 	if (process.argv.length < 5) {
 		log.log({ action: 'warn', data: `Invalid arguments` })
 		process.exit(1)
@@ -145,14 +168,14 @@ if (config.source == 'arguments') {
 	}
 
 	if (typeof process.argv[5] != 'undefined') {
-		if (!process.argv[5] == 'default')
+		if (process.argv[5] != 'default')
 			config.interval = parseInt(process.argv[5])
+		else config.interval = 300
 		config.mode = 'interval'
 	} else {
 		config.mode = 'single'
 	}
 } else if (config.source == 'file') {
-	log.log({ action: 'secondary', data: `Source`, secondary: 'file' })
 	if (!fs.existsSync('./config/domains.json')) {
 		log.log({ action: 'warn', data: `File domains.json doesn\'t exist` })
 		process.exit(1)
@@ -160,12 +183,6 @@ if (config.source == 'arguments') {
 	domains = getJson('./config/domains.json')
 }
 
-if ((config.mode != 'single') && (config.mode != 'interval')) {
-	log.log({ action: 'warn', data: `Invalid mode` })
-	process.exit(1)
-}
-
-log.log({ action: 'secondary', data: `Mode`, secondary: config.mode })
 if (config.mode == 'interval') {
 	if (typeof config.interval == 'undefined') {
 		log.log({ action: 'warn', data: `Interval not specified, setting to default` })

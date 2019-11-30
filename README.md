@@ -7,6 +7,7 @@
 	"source": "file",
 	"interval": 300,
 	"logs": "both",
+	"rotation": 1e6,
 	"ip": "0.0.0.0"
 }
 ```
@@ -17,6 +18,8 @@ source: `arguments` or `file`
 interval: in seconds
 
 logs: `no`, `short`, `full` or `both`
+
+rotation: max number of bytes for log files, before rotation
 
 ip: last address, updated automatically
 ### domains.json
@@ -40,21 +43,17 @@ If interval is specified, mode is set to interval, otherwise it overrides the co
 ### full.log
 Stores full output from console
 ```
-30/11/2019 19:40:11 # config.json doesn't exist, creating from default
-30/11/2019 19:40:11 # Loaded config.json
-30/11/2019 19:40:11 # Source: file
-30/11/2019 19:40:11 # File domains.json doesn't exist
-30/11/2019 19:40:56 # Loaded config.json
-30/11/2019 19:40:56 # Source: file
-30/11/2019 19:40:56 # Mode: single
-30/11/2019 19:40:56 # Getting new address
-30/11/2019 19:40:57 # New address: 0.0.0.0
-30/11/2019 19:40:57 # Sending new address for "your.domain"
-30/11/2019 19:40:59 # your.domain: address sent: good
+30/11/2019 21:17:09 # Loaded config.json
+30/11/2019 21:17:09 # single | file
+30/11/2019 21:17:09 # Getting new address
+30/11/2019 21:17:13 # New address: 0.0.0.0
+30/11/2019 21:17:13 # Sending new address for "your.domain"
+30/11/2019 21:17:14 # your.domain: address sent: good
 ```
 ### short.log
 Stores short output only for new addresses
 ```
+Sat Nov 30 2019 19:56:20 GMT+0100 (Central European Standard Time) Failed to get address
 Sat Nov 30 2019 19:56:20 GMT+0100 (Central European Standard Time) 83.30.207.133
   your.domain: 200 good
   [...]
