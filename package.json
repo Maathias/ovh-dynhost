@@ -1,0 +1,15 @@
+{
+  "name": "ovh-dynhost",
+  "version": "1.0.0",
+  "description": "ovh domain dynhost updater",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
+  },
+  "author": "Mateusz Pstrucha",
+  "license": "ISC",
+  "dependencies": {
+    "pretty-log": "github:maathias/pretty-log"
+  }
+}
