@@ -81,10 +81,6 @@ function combo(domains) {
 		Promise.all(promises).then(data => {
 			updateLog(d.response, data)
 			if (config.mode == 'interval') {
-				if (typeof config.interval == 'undefined') {
-					log.log({ action: 'warn', data: `Interval not specified, using default value (300)` })
-					config.interval = 300
-				}
 				setTimeout(() => combo(domains), config.interval * 1000)
 			}
 		})
@@ -129,7 +125,8 @@ if (config.source == 'arguments') {
 	}
 	
 	if (typeof process.argv[5] != 'undefined') {
-		config.interval = parseInt(process.argv[5])
+		if (!process.argv[5] == 'default')
+			config.interval = parseInt(process.argv[5])
 		config.mode = 'interval'
 	} else {
 		config.mode = 'single'
@@ -149,4 +146,11 @@ if ((config.mode != 'single') && (config.mode != 'interval')) {
 }
 
 log.log({ action: 'secondary', data: `Mode`, secondary: config.mode })
+if (config.mode == 'interval') {
+	if (typeof config.interval == 'undefined') {
+		log.log({ action: 'warn', data: `Interval not specified, setting to default` })
+		config.interval = 300
+	}
+	log.log({ action: 'clear', data: `Interval ${config.interval}s`})
+}
 combo(domains)
