@@ -6,6 +6,7 @@
 	"mode": "single",
 	"source": "file",
 	"interval": 300,
+	"logs": "both",
 	"ip": "0.0.0.0"
 }
 ```
@@ -14,6 +15,8 @@ mode: `single` or `interval`
 source: `arguments` or `file`
 
 interval: in seconds
+
+logs: `no`, `short`, `full` or `both`
 
 ip: last address, updated automatically
 ### domains.json

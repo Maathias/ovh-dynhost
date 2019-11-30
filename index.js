@@ -10,7 +10,8 @@ log.values.secondary = 'chalk.red(data.secondary)'
 log.values.mode = 'chalk.red(data.mode)'
 log.values.clear = 'data.data'
 log.after = function (data) {
-	fs.appendFileSync('./logs/full.log', data + '\n');
+	if ((config.log || 'both') == 'full' || (config.log || 'both') == 'both')
+		fs.appendFileSync('./logs/full.log', data + '\n');
 }
 
 function newIp() {
@@ -26,7 +27,10 @@ function newIp() {
 				log.log({ action: 'secondary', data: `New address`, secondary: d.toString() })
 				resolve({ status: res.statusCode, response: d.toString() })
 			})
-		}).on('error', e => reject(e)).end()
+		}).on('error', e => {
+			log.log({ action: 'warn', data: `Failed to get ip`})
+			reject(e)
+		}).end()
 	})
 }
 
@@ -86,16 +90,32 @@ function combo(domains) {
 		})
 		config.ip = d.response
 		setJson('./config/config.json', config)
+	}).catch(e => {
+		if (config.mode == 'interval') {
+			setTimeout(() => combo(domains), config.interval * 1000)
+		}
+		if (config.ip == false) {
+			log.log({ action: 'clear', data: `Address unchanged` })
+			return
+		}
+		config.ip = false
+		updateLog(null, null, false)
+		setJson('./config/config.json', config)
 	})
 }
 
-function updateLog(ip, domains) {
+function updateLog(ip, domains, ok) {
+	if(ok == false){
+		fs.appendFileSync('./logs/short.log', `${new Date} Failed to get ip\n`);
+		return
+	}
 	if (domains.length == 0) return
 	list = ""
 	for (let domain of domains) {
 		list += `  ${domain.hostname}: ${domain.status} ${domain.code}\n`
 	}
-	fs.appendFileSync('./logs/short.log', `${new Date} ${ip}\n${list}`);
+	if ((config.log || 'both') == 'short' || (config.log || 'both') == 'both')
+		fs.appendFileSync('./logs/short.log', `${new Date} ${ip}\n${list}`);
 }
 
 if (!fs.existsSync('./logs')) fs.mkdirSync('./logs')
@@ -123,7 +143,7 @@ if (config.source == 'arguments') {
 		user: process.argv[3],
 		pass: process.argv[4]
 	}
-	
+
 	if (typeof process.argv[5] != 'undefined') {
 		if (!process.argv[5] == 'default')
 			config.interval = parseInt(process.argv[5])
@@ -151,6 +171,6 @@ if (config.mode == 'interval') {
 		log.log({ action: 'warn', data: `Interval not specified, setting to default` })
 		config.interval = 300
 	}
-	log.log({ action: 'clear', data: `Interval ${config.interval}s`})
+	log.log({ action: 'clear', data: `Interval ${config.interval}s` })
 }
 combo(domains)
