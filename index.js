@@ -10,10 +10,9 @@ log.values.secondary = 'chalk.red(data.secondary)'
 log.values.mode = 'chalk.red(data.mode)'
 log.values.clear = 'data.data'
 log.after = function (data) {
-	
-	if ((config.log || 'both') == 'full' || (config.log || 'both') == 'both'){
+	if (((config || {}).log || 'both') == 'full' || ((config || {}).log || 'both') == 'both'){
 		fs.appendFileSync('./logs/full.log', data + '\n');
-		if (fs.statSync("./logs/full.log").size > (config.rotation || 1e6)) {
+		if (fs.statSync("./logs/full.log").size > ((config || {}).rotation || 1e6)) {
 			fs.rename("./logs/full.log", `./logs/full+.log`, function (err) {
 				if(err) log.log({ action: 'warn', data: `Error rotating log file` })
 			});
