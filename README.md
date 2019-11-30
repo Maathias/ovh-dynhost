@@ -10,8 +10,11 @@
 }
 ```
 mode: `single` or `interval`
+
 source: `arguments` or `file`
+
 interval: in seconds
+
 ip: last address, updated automatically
 ### domains.json
 ```json
