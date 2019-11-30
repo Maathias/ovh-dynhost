@@ -1,6 +1,6 @@
 module.exports = {
 	apps: [{
-		name: 'API',
+		name: 'ovh-dynhost',
 		script: 'index.js',
 		instances: 1,
 		autorestart: true,
