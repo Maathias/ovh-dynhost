@@ -3,29 +3,32 @@
 ### config.json
 ```json
 {
-	"mode": "single", // single, interval
-	"source": "file", // arguments, file
-	"interval": 300, // in seconds
-	"ip": "0.0.0.0" // last ip (saved automatically)
+	"mode": "single",
+	"source": "file",
+	"interval": 300,
+	"ip": "0.0.0.0"
 }
 ```
+mode: `single` or `interval`
+source: `arguments` or `file`
+interval: in seconds
+ip: last address, updated automatically
 ### domains.json
 ```json
 {
 	"your.domain": {
-		"user": "username", // without the domain prefix
+		"user": "username",
 		"pass": "password"
 	},
-	[...]
 }
 ```
 
 ## Usage
 `node index.js hostname username password <interval>`
 
-If interval is specified, mode is set to interval, otherwise it overrides the config and runs in single mode.
+If interval is specified, mode is set to interval, otherwise it overrides the config and runs in single mode. Set to `default` to use value from config.
 
-Values from config are only used when no arguments are given. By default single mode is used and values are taken from `domains.json` file
+ By default single mode is used and values are taken from `domains.json` file.
 
 ## logs/
 ### full.log
