@@ -9,6 +9,10 @@
   },
   "author": "Mateusz Pstrucha",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Maathias/ovh-dynhost.git"
+  },
   "dependencies": {
     "pretty-log": "github:maathias/pretty-log"
   }
