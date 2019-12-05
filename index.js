@@ -14,14 +14,15 @@ function newIp() {
 	return new Promise((resolve, reject) => {
 		log.log({ action: 'clear', data: `Getting new address` })
 		https.request({
-			hostname: 'api.ipify.org',
+			hostname: 'ip.seeip.org',
 			port: 443,
 			path: '/',
 			method: 'GET'
 		}, res => {
 			res.on('data', d => {
-				log.log({ action: 'secondary', data: `New address`, secondary: d.toString() })
-				resolve({ status: res.statusCode, response: d.toString() })
+				let ip = d.toString().replace(/\r?\n|\r/g, '')
+				log.log({ action: 'secondary', data: `New address`, secondary: ip })
+				resolve({ status: res.statusCode, response: ip })
 			})
 		}).on('error', e => {
 			log.log({ action: 'warn', data: `Failed to get address`})
